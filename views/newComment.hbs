@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="icon" type="image/x-icon" href="/img/bookshelf.png">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <title>Tyler's Library</title>
+<!--Just using bootstrap icons, nothing else for bootstrap, sad face emoji here lol-->
+</head>
+<style>
+	.whiteText{
+		color:white;
+	}
+	.nav-link {
+		color:white;
+	}
+
+</style>
+<body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg"><!--Comments and stuff -->
+	{{> header}}
+			<h2>New Comment</h2>
+		<div class="login-container">
+			<form method="POST" action="/comment">
+			<textarea name="text" placeholder="Write your comment..." required></textarea><br>
+			<button type="submit">Post Comment</button>
+			</form>
+		</div>
+	</body>
+</html>

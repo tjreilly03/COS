@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="icon" type="image/x-icon" href="/img/bookshelf.png">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <title>Tyler Reilly doin stuff</title>
+
+</head>
+<style>
+	.whiteText{
+		color:white;
+	}
+	.nav-link {
+		color:white;
+	}
+</style>
+<body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg"><!--Comments and stuff -->
+	{{> header}}
+  <h2>Login</h2>
+	<div class="login-container">
+
+		
+
+  {{#if error}}
+    <p class="error" style="color:red">{{error}}</p>
+  {{/if}}
+
+  <form action="/login" method="POST" class="login-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input 
+        type="text" 
+        id="username" 
+        name="username" 
+        placeholder="Enter your username" 
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        placeholder="Enter your password" 
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn">Login</button>
+  </form>
+
+  <p class="nav-link">
+    Don’t have an account? <a class="nav-link" href="/register">Register here</a>.
+  </p>
+  </div>
+	</body>
+</html>
