@@ -49,7 +49,7 @@ app.get('/index', (req, res) => {
 app.get('/', (req, res) => {
   const user = getCurrentUser(req);
   if (!user) return res.redirect('/login');
-    res.render('index', {
+    res.render('/login', {
         title: 'Welcome to Our Site',
         message: 'This is a Handlebars template!'
     });
