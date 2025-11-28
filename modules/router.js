@@ -122,7 +122,7 @@ module.exports = (app, deps) => {
         res.render('newComment', { title: 'New Comment', user });
       });
       
-      //posts
+//posts
       app.post('/login', async (req, res) => {
         const { username, password } = req.body;
         const user = users.find(u => u.username === username && u.password === password);

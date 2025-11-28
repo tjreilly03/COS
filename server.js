@@ -11,11 +11,10 @@ const pdfDiscovery = require('./modules/pdfDiscovery');
 const pdfValidation = require('./modules/pdfValidation');
 const PORT = 3000;
 
-
+//structures for holding users, comments, and the different sessions.
 let users = [];
 let comments = [];
 let sessions = {};
-let isloggedIn = false;
 
 
 // Set up Handlebars
@@ -38,6 +37,7 @@ const metadata = require('./data/pdfMetadata.json');
 
 // Apply custom router
 const setupRouter = require('./modules/router');
+//this checks if the user is logged in with a valid session Id
 function getCurrentUser(req) {
   const sessionId = req.cookies.sessionId;
   if (sessionId && sessions[sessionId] && sessions[sessionId].expires > Date.now()) {
@@ -61,5 +61,4 @@ setupRouter(app, {
 
 
 app.listen(PORT, () => {
-    //console.log('Server running on http://toastcode.net/tschotter_node');
 });
