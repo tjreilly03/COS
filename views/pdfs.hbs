@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Tyler's Library</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" type="image/x-icon" href="/img/bookshelf.png">
+
+    <style>
+        .whiteText { color: white; }
+        .nav-link { color: white; }
+        .pdf-card {
+            background: rgba(0,0,0,0.6);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 8px;
+            color: white;
+        }
+        .pdf-card h2 {
+            margin-bottom: 8px;
+        }
+        .pdf-card a {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg">
+
+    {{> header}}
+
+    <div class="container whiteText">
+        <h1>Available PDFs</h1>
+
+        {{#if pdfs}}
+            {{#each pdfs}}
+                <div class="pdf-card">
+                    <h2>{{title}}</h2>
+                    <p>{{description}}</p>
+                    <a href="/pdfs/{{filename}}" target="_blank">
+                        View / Download PDF
+                    </a>
+                </div>
+            {{/each}}
+        {{else}}
+            <p>No PDF files found.</p>
+        {{/if}}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+FROM node:lts
+
+WORKDIR /gateway
+
+COPY gateway.js .
+
+RUN npm init -y
+RUN npm install express request
+
+EXPOSE 80
+
+CMD ["node", "gateway.js"]
