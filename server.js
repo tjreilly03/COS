@@ -1,4 +1,5 @@
-
+//server.js
+//this now only has the const defs and then calls the router
 const express = require('express');
 const hbs = require('hbs');
 const path = require('path');

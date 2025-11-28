@@ -1,3 +1,4 @@
+//this file verifies the pdfs are working.
 const fs = require('fs');
 const path = require('path');
 

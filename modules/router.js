@@ -1,3 +1,5 @@
+//router.js
+//this file now holds all the route functions to clean up the main server.js
 const express = require('express');
 const path = require('path');
 

@@ -1,3 +1,4 @@
+//this is the file for getting the pdf information and metadata
 const fs = require('fs');
 const path = require('path');
 
