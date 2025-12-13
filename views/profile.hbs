@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="icon" type="image/x-icon" href="/img/bookshelf.png">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <title>Tyler Reilly doin stuff</title>
+
+</head>
+<style>
+	.whiteText{
+		color:white;
+	}
+	.nav-link {
+		color:white;
+	}
+</style>
+	<body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg"><!--Comments and stuff -->
+	{{> header}}
+				<h2>{{user.display_name}}'s Profile</h2>
+<div class="login-container">
+
+<h2>Profile Management</h2>
+<form method="POST" action="/profile/password">
+  <input type="password" name="currentPassword" placeholder="Current Password" required>
+  <input type="password" name="newPassword" placeholder="New Password" required>
+  <button>Change Password</button>
+</form>
+
+<form method="POST" action="/profile/email">
+  <input type="password" name="password" placeholder="Password" required>
+  <input type="email" name="newEmail" placeholder="New Email" required>
+  <button>Change Email</button>
+</form>
+
+<form method="POST" action="/profile/displayName">
+  <input type="text" name="displayName" value="{{user.display_name}}" required>
+  <button>Change Display Name</button>
+</form>
+
+<h2>Profile Customization</h2>
+<form method="POST" action="/profile/customize">
+  <input name="bio" placeholder="BIO" type="text" value="{{user.bio}}"/>
+  <button>Save</button>
+</form>
+</div>
+
+	</body>
+</html>

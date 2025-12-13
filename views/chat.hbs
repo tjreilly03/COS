@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="icon" type="image/x-icon" href="/img/bookshelf.png">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+
+    <title>Tyler Reilly doin stuff</title>
+
+</head>
+<style>
+	.whiteText{
+		color:white;
+	}
+	.nav-link {
+		color:white;
+	}
+</style>
+<body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg"><!--Comments and stuff -->
+	{{> header}}
+  <h1>Chat Room</h1>
+  <div class="login-container">
+    <div id="chat-box"  style="height:300px; overflow-y:scroll; border:1px solid #ccc;"></div>
+    <input id="chat-input" placeholder="Type a message..." autocomplete="off" />
+    <button id="send-btn">Send</button>
+  </div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  const chatBox = document.getElementById('chat-box');
+  const chatInput = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+
+  // Send message
+  sendBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+    if (!message) return;
+    socket.emit('chatMessage', message);
+    chatInput.value = '';
+  });
+
+  // Receive message
+  socket.on('chatMessage', (msg) => {
+    const div = document.createElement('div');
+    div.innerHTML = `<strong>${msg.display_name}</strong> [${new Date(msg.timestamp).toLocaleTimeString()}]: ${msg.message}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // Load chat history
+  socket.on('chatHistory', (messages) => {
+    messages.forEach(msg => {
+      const div = document.createElement('div');
+      div.innerHTML = `<strong>${msg.display_name}</strong> [${new Date(msg.timestamp).toLocaleTimeString()}]: ${msg.message}`;
+      chatBox.appendChild(div);
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+</script>
+
+	</body>
+</html>

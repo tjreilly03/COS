@@ -1,27 +1,31 @@
-# Pick a node version, 
 FROM node:lts
 
-# Set the working directory inside the container. Think of this as a virtual enviornment.
+# Install build deps for sqlite3 node module
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
+# Copy dependency manifests first (better caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm i
+# Install node dependencies
+RUN npm install
 
-# Copy the rest of the application code
+# Copy application source
 COPY . .
 
+# Create non-root user
 RUN groupadd -g 1001 nodejs && \
     useradd -u 1001 -g nodejs -s /bin/bash -m nodejs
 
-# Change ownership of the app directory to the nodejs user
-RUN chown -R nodejs:nodejs /app
+RUN mkdir -p /app/db && chown -R nodejs:nodejs /app/db
+
 USER nodejs
 
-# Expose the port the app runs on
 EXPOSE 3000
 
-# Define the command to run the application
 CMD ["npm", "start"]
