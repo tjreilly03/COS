@@ -182,7 +182,10 @@ module.exports = (app, deps) => {
       });
       
       app.get('/comments', async (req, res) => {
+        const user = await getCurrentUser(req);
+        if (!user) return res.redirect('/login');
         const PAGE_SIZE = 5;
+
         const page = Math.max(parseInt(req.query.page) || 1, 1);
       
         db.get(`SELECT COUNT(*) AS total FROM comments`, [], (err, countRow) => {
@@ -232,6 +235,8 @@ module.exports = (app, deps) => {
       });
 
       app.get('/bookrecs', async (req, res) => {
+        const user = await getCurrentUser(req);
+        if (!user) return res.redirect('/login');
         const PAGE_SIZE = 5;
         const page = Math.max(parseInt(req.query.page) || 1, 1);
       
