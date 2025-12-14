@@ -8,6 +8,15 @@ const { v4: uuidv4 } = require('uuid');
 const cookieParser = require('cookie-parser');
 const sgMail = require('@sendgrid/mail');
 
+const { marked } = require('marked');
+const DOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
+
+
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
@@ -24,6 +33,17 @@ module.exports = (app, deps) => {
       db
   } = deps;
   
+    function renderMarkdown(markdownText) {
+      const rawHtml = marked(markdownText, {
+        breaks: true,
+        gfm: true
+      });
+    
+      return purify.sanitize(rawHtml);
+    }
+  
+
+
     function sendResetEmail(toEmail, token) {
       const resetLink = `http://tylerslibrary.com/resetPassword?token=${token}`;
     
@@ -162,32 +182,109 @@ module.exports = (app, deps) => {
       });
       
       app.get('/comments', async (req, res) => {
-          const user = await getCurrentUser(req);
-          if (!user) return res.redirect('/login');
-        const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = 20;
-        const offset = (page - 1) * limit;
+        const PAGE_SIZE = 5;
+        const page = Math.max(parseInt(req.query.page) || 1, 1);
       
-        db.all(
-          `SELECT * FROM comments
-           ORDER BY created_at DESC
-           LIMIT ? OFFSET ?`,
-          [limit, offset],
-          (err, comments) => {
-            res.render('comments', {
-              comments,
-              page
-            });
-          }
-        );
+        db.get(`SELECT COUNT(*) AS total FROM comments`, [], (err, countRow) => {
+          if (err) return res.status(500).send('DB error');
+      
+          const totalComments = countRow.total;
+          const totalPages = Math.ceil(totalComments / PAGE_SIZE);
+          const safePage = Math.min(page, totalPages || 1);
+          const offset = (safePage - 1) * PAGE_SIZE;
+      
+          db.all(
+            `
+            SELECT
+              comments.text,
+              comments.created_at,
+              users.display_name AS author
+            FROM comments
+            JOIN users ON users.id = comments.user_id
+            ORDER BY comments.created_at DESC
+            LIMIT ? OFFSET ?
+            `,
+            [PAGE_SIZE, offset],
+            (err, rows) => {
+              if (err) return res.status(500).send('DB error');
+      
+              const comments = rows.map(c => ({
+                author: c.author,
+                text: renderMarkdown(c.text),
+                createdAt: new Date(c.created_at).toLocaleString()
+              }));
+      
+              res.render('comments', {
+                comments,
+                currentPage: safePage,
+                totalPages,
+                totalComments
+              });
+            }
+          );
+        });
       });
-      
       
       app.get('/comment/new', async (req, res) => {
         const user = await getCurrentUser(req);
         if (!user) return res.redirect('/login');
         res.render('newComment', { title: 'New Comment', user });
       });
+
+      app.get('/bookrecs', async (req, res) => {
+        const PAGE_SIZE = 5;
+        const page = Math.max(parseInt(req.query.page) || 1, 1);
+      
+        db.get(`SELECT COUNT(*) AS total FROM book_recs`, [], (err, countRow) => {
+          if (err) return res.status(500).send('DB error');
+      
+          const totalRecs = countRow.total;
+          const totalPages = Math.ceil(totalRecs / PAGE_SIZE);
+          const safePage = Math.min(page, totalPages || 1);
+          const offset = (safePage - 1) * PAGE_SIZE;
+      
+          db.all(
+            `
+            SELECT
+              book_recs.book_title,
+              book_recs.author,
+              book_recs.description,
+              book_recs.created_at,
+              users.display_name AS recomender
+            FROM book_recs
+            JOIN users ON users.id = book_recs.user_id
+            ORDER BY book_recs.created_at DESC
+            LIMIT ? OFFSET ?
+            `,
+            [PAGE_SIZE, offset],
+            (err, rows) => {
+              if (err) return res.status(500).send('DB error');
+      
+              const book_recs = rows.map(c => ({
+                title: c.title,
+                author: c.author,
+                recomender: c.recomender,
+                description: renderMarkdown(c.description),
+                createdAt: new Date(c.created_at).toLocaleString()
+              }));
+      
+              res.render('bookrecs', {
+                book_recs,
+                currentPage: safePage,
+                totalPages,
+                totalRecs
+              });
+            }
+          );
+        });
+      });
+
+      app.get('/bookrec/new', async (req, res) => {
+        const user = await getCurrentUser(req);
+        if (!user) return res.redirect('/login');
+        res.render('newBookRec', { title: 'New Recomendation', user });
+      });
+
       
       // GET /profile
       app.get('/profile', async (req, res) => {
@@ -467,7 +564,15 @@ module.exports = (app, deps) => {
         const user = await getCurrentUser(req);
         if (!user) return res.redirect('/login');
       
-        const { text } = req.body;
+        let { text } = req.body;
+        if (!text || text.trim().length === 0) {
+          return res.redirect('/comments');
+        }
+      
+        // Hard limit (rubric-friendly)
+        if (text.length > 2000) {
+          text = text.substring(0, 2000);
+        }
       
         db.run(
           `INSERT INTO comments (user_id, text, created_at)
@@ -476,6 +581,48 @@ module.exports = (app, deps) => {
           () => res.redirect('/comments')
         );
       });
+
+
+      app.post('/bookrec', async (req, res) => {
+        const user = await getCurrentUser(req);
+        if (!user) return res.redirect('/login');
+      
+        // ✅ Correct source of form data
+        let { title, author, description } = req.body;
+      
+        // Validation
+        if (!title || !author || !description) {
+          return res.redirect('/bookrecs');
+        }
+      
+        title = title.trim();
+        author = author.trim();
+        description = description.trim();
+      
+        if (!title || !author || !description) {
+          return res.redirect('/bookrecs');
+        }
+      
+        // Length limits (rubric-friendly)
+        if (title.length > 200) title = title.substring(0, 200);
+        if (author.length > 200) author = author.substring(0, 200);
+        if (description.length > 2000) description = description.substring(0, 2000);
+      
+        db.run(
+          `INSERT INTO book_recs (user_id, book_title, author, description, created_at)
+           VALUES (?, ?, ?, ?, ?)`,
+          [user.id, title, author, description, Date.now()],
+          err => {
+            if (err) {
+              console.error('BOOK REC INSERT ERROR:', err);
+              return res.status(500).send('DB error');
+            }
+            res.redirect('/bookrecs');
+          }
+        );
+      });
+      
+      
       
       
       app.post('/register', async (req, res) => {

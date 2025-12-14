@@ -21,17 +21,36 @@
 </style>
 <body background="https://t4.ftcdn.net/jpg/03/40/07/85/360_F_340078556_YD52qpLaiTbO5E0OF90FuOaAq3sZr8yF.jpg"><!--Comments and stuff -->
 	{{> header}}
-			<h2>Comments</h2>
+		<h2 class="whiteText">Comments</h2>
 
 		<div class="login-container">
-			{{#if user}}
 			<a class="nav-link" href="/comment/new">New Comment</a>
-			{{/if}}
-			<ul>
-			{{#each comments}}
-				<li><strong>{{author}}</strong>: {{text}} <em>({{createdAt}})</em></li>
-			{{/each}}
+		</div>
+		<div class="login-container">
+			<ul class="comment-list">
+				{{#each comments}}
+				<li class="comment">
+					<strong class="whiteText">{{author}}</strong>
+					<div class="comment-body whiteText">
+					{{{text}}}
+					</div>
+					<em class="whiteText">({{createdAt}})</em>
+				</li>
+				{{/each}}
 			</ul>
 		</div>
+
+		<div class="pagination whiteText login-container">
+			{{#if (gt currentPage 1)}}
+				<a class="nav-link"  href="/comments?page={{subtract currentPage 1}}">Previous</a>
+			{{/if}}
+
+			Page {{currentPage}} of {{totalPages}}
+
+			{{#if (lt currentPage totalPages)}}
+				<a class="nav-link" href="/comments?page={{add currentPage 1}}">Next</a>
+			{{/if}}
+		</div>
+
 	</body>
 </html>

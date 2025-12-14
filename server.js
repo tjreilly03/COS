@@ -14,6 +14,12 @@ const socketio = require('socket.io');
 const server = http.createServer(app);
 const io = socketio(server);
 
+hbs.registerHelper('gt', (a, b) => a > b);
+hbs.registerHelper('lt', (a, b) => a < b);
+hbs.registerHelper('add', (a, b) => a + b);
+hbs.registerHelper('subtract', (a, b) => a - b);
+
+
 // Set up Handlebars
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));

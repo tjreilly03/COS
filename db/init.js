@@ -56,6 +56,16 @@ db.serialize(() => {
       timestamp INTEGER
     );
 
+    CREATE TABLE IF NOT EXISTS book_recs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      book_title TEXT,
+      author TEXT,
+      description TEXT,
+      created_at INTEGER,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+
   `, (err) => {
     if (err) {
       console.error('DB init error:', err);
