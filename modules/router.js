@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 const cookieParser = require('cookie-parser');
 const sgMail = require('@sendgrid/mail');
 
-sgMail.setApiKey("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");
+sgMail.setApiKey(process.env.API_KEY);
 
 
 //password is 4dgJ%JF@$JFKD55kgfdjht^
