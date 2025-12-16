@@ -30,9 +30,15 @@
 			<ul class="comment-list">
 				{{#each book_recs}}
 				<li class="comment">
-					<strong class="whiteText">{{title}}</strong>
-					<strong class="whiteText">{{author}}</strong>
-					<strong class="whiteText">{{recomender}}</strong>
+					<h3>
+						<strong class="whiteText">{{title}}</strong>
+					</h3>
+					<br>
+
+					<strong class="whiteText">Written by: {{author}}</strong>
+					<br>
+
+					<strong class="whiteText">Recomendation by: {{recomender}}</strong>
 
 					<div class="comment-body whiteText">
 					{{{description}}}

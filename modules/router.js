@@ -266,7 +266,7 @@ module.exports = (app, deps) => {
               if (err) return res.status(500).send('DB error');
       
               const book_recs = rows.map(c => ({
-                title: c.title,
+                title: c.book_title,
                 author: c.author,
                 recomender: c.recomender,
                 description: renderMarkdown(c.description),
